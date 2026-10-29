@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>냥이와 함께하는 다각형의 둘레와 넓이 탐험</title>
+<style>
+  :root {
+    --bg-main: #FFFBF5;
+    --mint: #70C1B3;
+    --mint-light: #E8F6F3;
+    --pastel-pink: #F4ACB7;
+    --pastel-pink-light: #FDEEF0;
+    --pastel-yellow: #FFE382;
+    --pastel-blue: #A2D2FF;
+    --pastel-blue-light: #EDF6FF;
+    --pastel-purple: #BDB2FF;
+    --text-main: #2D3748;
+    --text-sub: #4A5568;
+    --card-bg: #FFFFFF;
+    --border-color: #E2E8F0;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Nanum Gothic", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  #app-container {
+    width: 100%;
+    max-width: 650px;
+    min-height: 100vh;
+    background: #FFFFFF;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  header {
+    background: #FFFFFF;
+    padding: 12px 18px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .student-tag {
+    background: var(--pastel-pink-light);
+    color: #D81E5B;
+    border: 1.5px solid var(--pastel-pink);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .icon-btn {
+    background: #F8FAFC;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .icon-btn:hover {
+    background: #EDF2F7;
+  }
+
+  .icon-btn.primary {
+    background: var(--mint-light);
+    border-color: var(--mint);
+    color: #0E7490;
+  }
+
+  main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .profile-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .hero-cat {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.06));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .title-lg {
+    font-size: 23px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #1F2937;
+  }
+
+  .desc-text {
+    font-size: 14px;
+    color: #64748B;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .student-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+  }
+
+  .student-card {
+    background: #F8FAFC;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .student-card:hover {
+    border-color: var(--mint);
+    background: var(--mint-light);
+    transform: translateY(-2px);
+  }
+
+  .student-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .avatar-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--pastel-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 2px solid #F6D365;
+  }
+
+  .student-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .student-progress-text {
+    font-size: 13px;
+    color: #64748B;
+    margin-top: 2px;
+  }
+
+  .student-badge {
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #0284C7;
+  }
+
+  .add-student-box {
+    width: 100%;
+    background: #FFFFFF;
+    border: 2px dashed #94A3B8;
+    border-radius: var(--radius-md);
+    padding: 14px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .input-name {
+    flex: 1;
+    padding: 14px;
+    font-size: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .input-name:focus {
+    border-color: var(--mint);
+  }
+
+  .btn-add {
+    background: var(--mint);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 22px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #0D9488;
+    touch-action: manipulation;
+  }
+
+  .btn-add:active {
+    transform: translateY(2px);
+    box-shadow: none;
+  }
+
+  .session-status-bar {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .session-title-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .q-counter {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0E7490;
+    background: #CFFAFE;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  .cat-dialog-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+
+  .cat-avatar-wrap {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .cat-dialog-content {
+    flex: 1;
+  }
+
+  .cat-say {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: #1E293B;
+  }
+
+  .card-container {
+    background: #FFFFFF;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .diagram-area {
+    width: 100%;
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+    background: #FAF8F5;
+    border-radius: var(--radius-md);
+    padding: 10px;
+  }
+
+  .formula-hint-btn {
+    background: #FFFBEB;
+    border: 1.5px solid #FDE68A;
+    color: #B45309;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+
+  .formula-hint-box {
+    width: 100%;
+    background: #FFFBEB;
+    border: 1.5px dashed #FCD34D;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #92400E;
+    text-align: center;
+    margin-bottom: 14px;
+    font-weight: 600;
+    display: none;
+  }
+
+  .options-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .opt-btn {
+    background: #FFFFFF;
+    border: 2.5px solid #E2E8F0;
+    border-radius: var(--radius-md);
+    padding: 16px 10px;
+    font-size: 19px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #CBD5E1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .opt-btn:hover {
+    border-color: var(--mint);
+    background: var(--mint-light);
+  }
+
+  .opt-btn:active {
+    transform: translateY(3px);
+    box-shadow: none;
+  }
+
+  .opt-btn.correct {
+    background: #ECFDF5 !important;
+    border-color: #10B981 !important;
+    color: #047857 !important;
+    box-shadow: 0 3px 0 #059669 !important;
+  }
+
+  .opt-btn.wrong {
+    background: #FEF2F2 !important;
+    border-color: #EF4444 !important;
+    color: #B91C1C !important;
+    box-shadow: 0 3px 0 #DC2626 !important;
+  }
+
+  .concept-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .concept-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .concept-box {
+    background: #FFFFFF;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .concept-box.active {
+    border-color: var(--mint);
+    background: #F0FDFA;
+  }
+
+  .concept-box-title {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .concept-action-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--mint);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .quiz-section {
+    background: #FFFDF9;
+    border: 2px solid #FDE68A;
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-top: 10px;
+  }
+
+  .quiz-item {
+    background: white;
+    border: 1.5px solid #E2E8F0;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-top: 10px;
+  }
+
+  .quiz-item.passed {
+    border-color: #10B981;
+    background: #F0FDF4;
+  }
+
+  .quiz-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .quiz-choice-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-color);
+    background: white;
+    cursor: pointer;
+  }
+
+  .start-main-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: #10B981;
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #059669;
+    margin-top: 16px;
+    display: none;
+    animation: bounce 1s infinite alternate;
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .modal-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 26px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  .modal-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--mint);
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app-container">
+  <header>
+    <div class="header-left">
+      <div id="header-student-tag" class="student-tag" style="display:none;">
+        <span>👤</span><span id="current-student-name">학생</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openConceptScreen()" title="둘레와 넓이란?">📖 개념보기</button>
+      <button class="icon-btn" id="btn-sound-toggle" onclick="toggleSound()">🔊 소리</button>
+      <button class="icon-btn" id="btn-change-student" onclick="showProfileScreen()" style="display:none;">🔄 학생바꾸기</button>
+      <button class="icon-btn primary" onclick="downloadCurrentHTML()">💾 코드 다운로드</button>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- 1. 프로필 선택 뷰 -->
+    <div id="view-profile" class="profile-screen">
+      <div class="hero-cat" id="profile-hero-cat"></div>
+      <div class="title-lg">다각형 둘레와 넓이 탐험대</div>
+      <div class="desc-text">안녕! 오늘도 냥이와 함께 수학 놀이를 해볼까요?<br>내 이름을 콕 눌러서 시작해요!</div>
+      
+      <div class="student-list" id="student-list-container"></div>
+
+      <div class="add-student-box">
+        <input type="text" id="new-student-name" class="input-name" placeholder="새 학생 이름 (예: 민수)" maxlength="8" onkeydown="if(event.key==='Enter') addNewStudent()">
+        <button type="button" class="btn-add" id="btn-add-student" onclick="addNewStudent()">+ 등록</button>
+      </div>
+    </div>
+
+    <!-- 2. 게임 본체 뷰 -->
+    <div id="view-game" style="display:none; flex-direction:column; flex:1;">
+      <div class="session-status-bar">
+        <div class="session-title-text" id="session-title">
+          <span>🐾</span> <span id="session-name-text">1단계. 정다각형의 둘레</span>
+        </div>
+        <div class="q-counter" id="question-progress-badge">1 / 5 문제</div>
+      </div>
+
+      <div class="cat-dialog-box">
+        <div class="cat-avatar-wrap" id="cat-avatar-box"></div>
+        <div class="cat-dialog-content">
+          <div class="cat-say" id="cat-speech-text">안녕! 우리 같이 차근차근 문제를 풀어보자냥!</div>
+        </div>
+      </div>
+
+      <div class="card-container">
+        <button class="formula-hint-btn" onclick="toggleFormulaHint()">💡 공식 힌트 보기</button>
+        <div class="formula-hint-box" id="formula-hint-box"></div>
+
+        <div class="diagram-area" id="diagram-container"></div>
+
+        <div id="question-stem" style="font-size:18px; font-weight:700; margin:10px 0; text-align:center;">
+          둘레를 구해보자냥!
+        </div>
+
+        <div class="options-grid" id="options-container"></div>
+      </div>
+    </div>
+
+    <!-- 3. 개념 이해 0단계 뷰 -->
+    <div id="view-concept" style="display:none; flex-direction:column;">
+      <div class="session-status-bar">
+        <div class="session-title-text">
+          <span>🌱</span> <span>0단계. 둘레와 넓이의 차이 알아보기</span>
+        </div>
+      </div>
+
+      <div class="cat-dialog-box">
+        <div class="cat-avatar-wrap" id="cat-concept-avatar"></div>
+        <div class="cat-dialog-content">
+          <div class="cat-say" id="concept-cat-speech">
+            먼저 <b>둘레</b>와 <b>넓이</b>가 무엇인지 냥이와 함께 눈으로 직접 확인해봐요!
+          </div>
+        </div>
+      </div>
+
+      <div class="concept-container">
+        <div class="concept-row">
+          <div class="concept-box active">
+            <div class="concept-box-title" style="color:#0284C7;">🎀 둘레 (길이)</div>
+            <div style="font-size:12px; color:#64748B; margin-bottom:8px;">도형 테두리를 한 바퀴 삥 도는 끈의 길이! (cm)</div>
+            <svg id="concept-walk-svg" width="240" height="150" viewBox="0 0 240 150" style="background:#FAF8F5; border-radius:12px; overflow:visible;">
+              <rect x="30" y="30" width="180" height="90" fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="6,6" rx="4"/>
+              <path id="walk-path-trace" d="" fill="none" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
+              <text x="120" y="22" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">가로 4cm</text>
+              <text x="120" y="138" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">가로 4cm</text>
+              <text x="20" y="80" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">2cm</text>
+              <text x="220" y="80" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">2cm</text>
+              <g id="walking-cat" transform="translate(30, 30)">
+                <circle cx="0" cy="0" r="14" fill="#FDBA74" stroke="#EA580C" stroke-width="2"/>
+                <polygon points="-12,-8 -6,-18 -2,-9" fill="#EA580C"/>
+                <polygon points="2,-9 6,-18 12,-8" fill="#EA580C"/>
+                <circle cx="-4" cy="-2" r="2" fill="#1F2937"/>
+                <circle cx="4" cy="-2" r="2" fill="#1F2937"/>
+                <path d="M -3 3 Q 0 6 3 3" fill="none" stroke="#1F2937" stroke-width="1.5"/>
+              </g>
+            </svg>
+            <button class="concept-action-btn" onclick="startCatWalking()">🐾 냥이 둘레 걷기</button>
+          </div>
+
+          <div class="concept-box active">
+            <div class="concept-box-title" style="color:#059669;">🟩 넓이 (크기)</div>
+            <div style="font-size:12px; color:#64748B; margin-bottom:8px;">도형 안쪽 바닥을 가득 덮는 타일의 크기! (cm²)</div>
+            <svg id="concept-tile-svg" width="240" height="150" viewBox="0 0 240 150" style="background:#FAF8F5; border-radius:12px;">
+              <g id="tile-grid-group"></g>
+              <text x="120" y="22" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">가로 4칸 (4cm)</text>
+              <text x="20" y="80" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">2칸</text>
+              <text id="tile-count-label" x="120" y="80" font-size="16" font-weight="bold" fill="#047857" text-anchor="middle" style="display:none;">8 cm²</text>
+            </svg>
+            <button class="concept-action-btn" style="background:#10B981;" onclick="startTileFilling()">🟩 타일 채우기</button>
+          </div>
+        </div>
+
+        <div class="quiz-section">
+          <div style="font-size:16px; font-weight:800; color:#B45309; text-align:center;">
+            ⚡ 실생활 개념 깜짝 퀴즈 (2문제 통과 시 1단계 오픈!)
+          </div>
+
+          <div class="quiz-item" id="concept-quiz-1">
+            <div style="font-weight:700; font-size:14px; color:#1E293B; line-height:1.4;">
+              🎂 <b>문제 1.</b> 친구 생일 케이크 상자 바깥쪽에 <b>선물 리본 끈을 한 바퀴 빙 둘러 묶으려고</b> 해요. 필요한 끈의 길이는 무엇일까요?
+            </div>
+            <div class="quiz-btn-group">
+              <button class="quiz-choice-btn" onclick="checkConceptQuiz(1, 'perimeter', this)">🎀 둘레 (길이)</button>
+              <button class="quiz-choice-btn" onclick="checkConceptQuiz(1, 'area', this)">🟩 넓이 (크기)</button>
+            </div>
+            <div class="quiz-feedback" id="quiz-feedback-1" style="font-size:13px; font-weight:bold; margin-top:6px; display:none;"></div>
+          </div>
+
+          <div class="quiz-item" id="concept-quiz-2">
+            <div style="font-weight:700; font-size:14px; color:#1E293B; line-height:1.4;">
+              🧺 <b>문제 2.</b> 봄 소풍 잔디밭 위에 다 함께 앉으려고 <b>바닥에 돗자리를 활짝 펴서 깔려고</b> 해요. 바닥을 덮는 크기는 무엇일까요?
+            </div>
+            <div class="quiz-btn-group">
+              <button class="quiz-choice-btn" onclick="checkConceptQuiz(2, 'perimeter', this)">🎀 둘레 (길이)</button>
+              <button class="quiz-choice-btn" onclick="checkConceptQuiz(2, 'area', this)">🟩 넓이 (크기)</button>
+            </div>
+            <div class="quiz-feedback" id="quiz-feedback-2" style="font-size:13px; font-weight:bold; margin-top:6px; display:none;"></div>
+          </div>
+        </div>
+
+        <button class="start-main-btn" id="btn-enter-game" onclick="finishConceptAndGoToGame()">
+          🎉 멋져요! 이제 본 게임(1단계) 도전하기 ➔
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <div id="modal-container" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div id="modal-cat-svg" style="width:90px; height:90px; margin:0 auto 10px;"></div>
+      <div class="title-lg" id="modal-title">세션 클리어!</div>
+      <div class="desc-text" id="modal-desc" style="margin-bottom:15px;">정말 대단해! 다음 단계로 계속 가볼까?</div>
+      <button class="modal-btn" id="modal-action-btn" onclick="closeModal()">다음으로 가기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.muted = false;
+  }
+  init() {
+    try {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    } catch(e) {}
+  }
+  playPop() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(450, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
+    } catch(e){}
+  }
+  playCorrect() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      [523.25, 659.25, 783.99].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+        gain.gain.setValueAtTime(0.3, now + idx * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.09);
+        osc.stop(now + idx * 0.09 + 0.25);
+      });
+    } catch(e){}
+  }
+  playEncourage() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(329.63, now);
+      osc.frequency.exponentialRampToValueAtTime(261.63, now + 0.2);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } catch(e){}
+  }
+  playFanfare() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        gain.gain.setValueAtTime(0.35, now + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.4);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.12);
+        osc.stop(now + idx * 0.12 + 0.4);
+      });
+    } catch(e){}
+  }
+}
+
+const sounds = new SoundEngine();
+
+function getCatSvg(mood = 'normal') {
+  let mouth = '<path d="M 44 54 Q 50 58 56 54" fill="none" stroke="#2D3748" stroke-width="2.5" stroke-linecap="round"/>';
+  let eyes = `
+    <ellipse cx="38" cy="45" rx="3.5" ry="4.5" fill="#2D3748"/>
+    <ellipse cx="62" cy="45" rx="3.5" ry="4.5" fill="#2D3748"/>
+    <circle cx="37" cy="43" r="1.5" fill="#FFFFFF"/>
+    <circle cx="61" cy="43" r="1.5" fill="#FFFFFF"/>
+  `;
+  let blush = `
+    <circle cx="32" cy="51" r="5" fill="#F4ACB7" opacity="0.6"/>
+    <circle cx="68" cy="51" r="5" fill="#F4ACB7" opacity="0.6"/>
+  `;
+  let crown = '';
+
+  if (mood === 'happy') {
+    eyes = `
+      <path d="M 34 47 Q 38 41 42 47" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 58 47 Q 62 41 66 47" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+    `;
+    mouth = '<path d="M 44 53 Q 50 62 56 53 Z" fill="#E11D48"/>';
+  } else if (mood === 'cheer') {
+    eyes = `
+      <ellipse cx="38" cy="44" rx="4" ry="4" fill="#2D3748"/>
+      <ellipse cx="62" cy="44" rx="4" ry="4" fill="#2D3748"/>
+      <circle cx="39" cy="42" r="1.5" fill="#FFFFFF"/>
+      <circle cx="63" cy="42" r="1.5" fill="#FFFFFF"/>
+    `;
+    mouth = '<ellipse cx="50" cy="56" rx="3.5" ry="4.5" fill="#D97706"/>';
+  } else if (mood === 'celebrate') {
+    crown = '<polygon points="40,20 45,28 50,18 55,28 60,20 62,32 38,32" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>';
+    eyes = `
+      <path d="M 34 46 Q 38 39 42 46" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 58 46 Q 62 39 66 46" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+    `;
+    mouth = '<path d="M 43 52 Q 50 63 57 52 Z" fill="#E11D48"/>';
+  }
+
+  return `
+    <svg viewBox="0 0 100 100" width="100%" height="100%">
+      ${crown}
+      <polygon points="26,35 15,12 40,24" fill="#FDBA74" stroke="#EA580C" stroke-width="2.5" stroke-linejoin="round"/>
+      <polygon points="25,30 18,17 35,24" fill="#FED7AA"/>
+      <polygon points="74,35 85,12 60,24" fill="#FDBA74" stroke="#EA580C" stroke-width="2.5" stroke-linejoin="round"/>
+      <polygon points="75,30 82,17 65,24" fill="#FED7AA"/>
+      <circle cx="50" cy="50" r="34" fill="#FFEDD5" stroke="#EA580C" stroke-width="2.5"/>
+      ${blush}
+      ${eyes}
+      <polygon points="47,49 53,49 50,52" fill="#EA580C"/>
+      ${mouth}
+      <line x1="20" y1="48" x2="32" y2="50" stroke="#78350F" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="19" y1="55" x2="31" y2="54" stroke="#78350F" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="68" y1="50" x2="80" y2="48" stroke="#78350F" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="69" y1="54" x2="81" y2="55" stroke="#78350F" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+const SESSIONS = [
+  {
+    id: 1,
+    title: "1단계. 정다각형의 둘레",
+    formula: "정다각형의 둘레 = (한 변의 길이) × (변의 수)",
+    catHint: "모든 변의 길이가 똑같아! 한 변의 길이에 변의 수를 곱해보자냥!",
+    questions: [
+      {
+        stem: "한 변이 4cm인 정삼각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,30 50,150 190,150" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" stroke-linejoin="round"/>
+            <text x="120" y="170" font-size="16" font-weight="bold" fill="#0369A1" text-anchor="middle">4 cm</text>
+            <text x="75" y="85" font-size="14" font-weight="bold" fill="#0369A1" text-anchor="middle">4 cm</text>
+            <text x="165" y="85" font-size="14" font-weight="bold" fill="#0369A1" text-anchor="middle">4 cm</text>
+          </svg>
+        `,
+        options: ["12 cm", "8 cm", "14 cm", "10 cm"],
+        ans: 0,
+        explain: "정삼각형은 변이 3개! 4cm × 3 = 12cm다냥!"
+      },
+      {
+        stem: "한 변이 6cm인 정사각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="65" y="35" width="110" height="110" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" rx="4"/>
+            <text x="120" y="165" font-size="16" font-weight="bold" fill="#B45309" text-anchor="middle">6 cm</text>
+            <text x="45" y="95" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">6 cm</text>
+          </svg>
+        `,
+        options: ["20 cm", "24 cm", "36 cm", "18 cm"],
+        ans: 1,
+        explain: "정사각형은 변이 4개! 6cm × 4 = 24cm다냥!"
+      },
+      {
+        stem: "한 변이 5cm인 정오각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,25 195,80 166,155 74,155 45,80" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <text x="120" y="173" font-size="16" font-weight="bold" fill="#15803D" text-anchor="middle">5 cm</text>
+            <text x="120" y="100" font-size="14" font-weight="bold" fill="#15803D" text-anchor="middle">변 5개</text>
+          </svg>
+        `,
+        options: ["20 cm", "30 cm", "25 cm", "15 cm"],
+        ans: 2,
+        explain: "정오각형은 변이 5개! 5cm × 5 = 25cm다냥!"
+      },
+      {
+        stem: "한 변이 3cm인 정육각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,25 180,60 180,125 120,160 60,125 60,60" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <text x="120" y="177" font-size="16" font-weight="bold" fill="#7E22CE" text-anchor="middle">3 cm</text>
+            <text x="120" y="100" font-size="14" font-weight="bold" fill="#7E22CE" text-anchor="middle">변 6개</text>
+          </svg>
+        `,
+        options: ["18 cm", "15 cm", "21 cm", "24 cm"],
+        ans: 0,
+        explain: "정육각형은 변이 6개! 3cm × 6 = 18cm다냥!"
+      },
+      {
+        stem: "한 변이 7cm인 정사각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="65" y="35" width="110" height="110" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" rx="4"/>
+            <text x="120" y="165" font-size="16" font-weight="bold" fill="#BE123C" text-anchor="middle">7 cm</text>
+          </svg>
+        `,
+        options: ["21 cm", "28 cm", "35 cm", "49 cm"],
+        ans: 1,
+        explain: "정사각형 둘레는 7cm × 4 = 28cm다냥!"
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "2단계. 사각형의 둘레",
+    formula: "직사각형 둘레 = (가로 + 세로) × 2 | 마름모 둘레 = (한 변) × 4",
+    catHint: "직사각형은 마주보는 변의 길이가 같아! 네 변의 길이를 모두 더해보자냥!",
+    questions: [
+      {
+        stem: "가로 6cm, 세로 4cm인 직사각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="40" y="45" width="160" height="90" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" rx="4"/>
+            <text x="120" y="35" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">가로 6 cm</text>
+            <text x="215" y="95" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">4 cm</text>
+          </svg>
+        `,
+        options: ["20 cm", "24 cm", "18 cm", "10 cm"],
+        ans: 0,
+        explain: "(6 + 4) × 2 = 10 × 2 = 20cm다냥!"
+      },
+      {
+        stem: "가로 8cm, 세로 3cm인 직사각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="35" y="55" width="170" height="70" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" rx="4"/>
+            <text x="120" y="45" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">가로 8 cm</text>
+            <text x="215" y="95" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">3 cm</text>
+          </svg>
+        `,
+        options: ["22 cm", "24 cm", "26 cm", "16 cm"],
+        ans: 0,
+        explain: "(8 + 3) × 2 = 11 × 2 = 22cm다냥!"
+      },
+      {
+        stem: "이웃한 두 변이 5cm, 3cm인 평행사변형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="65,135 185,135 210,55 90,55" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <text x="130" y="155" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">5 cm</text>
+            <text x="60" y="90" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">3 cm</text>
+          </svg>
+        `,
+        options: ["15 cm", "16 cm", "18 cm", "14 cm"],
+        ans: 1,
+        explain: "평행사변형도 마주보는 변의 길이가 같아! (5 + 3) × 2 = 16cm다냥!"
+      },
+      {
+        stem: "한 변이 5cm인 마름모의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,30 190,90 120,150 50,90" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <text x="168" y="58" font-size="15" font-weight="bold" fill="#7E22CE" text-anchor="middle">5 cm</text>
+          </svg>
+        `,
+        options: ["15 cm", "20 cm", "25 cm", "18 cm"],
+        ans: 1,
+        explain: "마름모는 네 변의 길이가 모두 같아! 5cm × 4 = 20cm다냥!"
+      },
+      {
+        stem: "가로 7cm, 세로 5cm인 직사각형의 둘레는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="45" y="45" width="150" height="95" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" rx="4"/>
+            <text x="120" y="35" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">가로 7 cm</text>
+            <text x="210" y="98" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">5 cm</text>
+          </svg>
+        `,
+        options: ["22 cm", "24 cm", "26 cm", "35 cm"],
+        ans: 1,
+        explain: "(7 + 5) × 2 = 12 × 2 = 24cm다냥!"
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "3단계. 직사각형의 넓이",
+    formula: "직사각형 넓이 = (가로) × (세로) | 정사각형 넓이 = (한 변) × (한 변)",
+    catHint: "도형의 바닥을 타일로 덮는 크기야! 단위는 cm²(제곱센티미터)를 써요!",
+    questions: [
+      {
+        stem: "가로 5cm, 세로 3cm인 직사각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="45" y="45" width="150" height="90" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" rx="4"/>
+            <text x="120" y="35" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">5 cm</text>
+            <text x="210" y="95" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">3 cm</text>
+          </svg>
+        `,
+        options: ["15 cm²", "16 cm²", "18 cm²", "8 cm²"],
+        ans: 0,
+        explain: "넓이는 가로 × 세로! 5 × 3 = 15 cm²다냥!"
+      },
+      {
+        stem: "한 변이 4cm인 정사각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="65" y="35" width="110" height="110" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" rx="4"/>
+            <text x="120" y="165" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">4 cm</text>
+            <text x="45" y="95" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">4 cm</text>
+          </svg>
+        `,
+        options: ["12 cm²", "16 cm²", "20 cm²", "8 cm²"],
+        ans: 1,
+        explain: "정사각형 넓이는 한 변 × 한 변! 4 × 4 = 16 cm²다냥!"
+      },
+      {
+        stem: "가로 7cm, 세로 2cm인 직사각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="35" y="60" width="170" height="60" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" rx="4"/>
+            <text x="120" y="48" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">7 cm</text>
+            <text x="218" y="95" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">2 cm</text>
+          </svg>
+        `,
+        options: ["14 cm²", "18 cm²", "16 cm²", "9 cm²"],
+        ans: 0,
+        explain: "7 × 2 = 14 cm²다냥!"
+      },
+      {
+        stem: "한 변이 6cm인 정사각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="65" y="35" width="110" height="110" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" rx="4"/>
+            <text x="120" y="165" font-size="15" font-weight="bold" fill="#7E22CE" text-anchor="middle">6 cm</text>
+          </svg>
+        `,
+        options: ["24 cm²", "36 cm²", "30 cm²", "42 cm²"],
+        ans: 1,
+        explain: "6 × 6 = 36 cm²다냥!"
+      },
+      {
+        stem: "가로 8cm, 세로 5cm인 직사각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <rect x="40" y="45" width="160" height="95" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" rx="4"/>
+            <text x="120" y="35" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">8 cm</text>
+            <text x="215" y="98" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">5 cm</text>
+          </svg>
+        `,
+        options: ["35 cm²", "45 cm²", "40 cm²", "26 cm²"],
+        ans: 2,
+        explain: "8 × 5 = 40 cm²다냥!"
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "4단계. 평행사변형의 넓이",
+    formula: "평행사변형의 넓이 = (밑변) × (높이)",
+    catHint: "비스듬한 옆 변이 아니라, 꼭대기에서 수직으로 내려온 '높이'를 곱해야 해!",
+    questions: [
+      {
+        stem: "밑변이 6cm, 높이가 4cm인 평행사변형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="50,135 170,135 205,50 85,50" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="85" y1="50" x2="85" y2="135" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <rect x="85" y="125" width="10" height="10" fill="none" stroke="#E11D48" stroke-width="1.5"/>
+            <text x="110" y="155" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">밑변 6 cm</text>
+            <text x="65" y="95" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">높이 4cm</text>
+          </svg>
+        `,
+        options: ["20 cm²", "24 cm²", "28 cm²", "10 cm²"],
+        ans: 1,
+        explain: "평행사변형 넓이 = 밑변 × 높이 = 6 × 4 = 24 cm²다냥!"
+      },
+      {
+        stem: "밑변이 7cm, 높이가 3cm인 평행사변형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="45,135 175,135 210,65 80,65" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="80" y1="65" x2="80" y2="135" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="110" y="155" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">밑변 7 cm</text>
+            <text x="60" y="105" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">3 cm</text>
+          </svg>
+        `,
+        options: ["21 cm²", "24 cm²", "18 cm²", "10 cm²"],
+        ans: 0,
+        explain: "7 × 3 = 21 cm²다냥!"
+      },
+      {
+        stem: "밑변이 5cm, 높이가 6cm인 평행사변형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="60,145 160,145 195,45 95,45" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="95" y1="45" x2="95" y2="145" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="110" y="165" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">밑변 5 cm</text>
+            <text x="75" y="95" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">6 cm</text>
+          </svg>
+        `,
+        options: ["28 cm²", "30 cm²", "35 cm²", "25 cm²"],
+        ans: 1,
+        explain: "5 × 6 = 30 cm²다냥!"
+      },
+      {
+        stem: "밑변이 8cm, 높이가 5cm인 평행사변형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="40,140 180,140 215,50 75,50" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="75" y1="50" x2="75" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="110" y="160" font-size="15" font-weight="bold" fill="#7E22CE" text-anchor="middle">밑변 8 cm</text>
+            <text x="55" y="95" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">5 cm</text>
+          </svg>
+        `,
+        options: ["36 cm²", "40 cm²", "45 cm²", "32 cm²"],
+        ans: 1,
+        explain: "8 × 5 = 40 cm²다냥!"
+      },
+      {
+        stem: "밑변이 9cm, 높이가 4cm인 평행사변형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="35,135 185,135 215,55 65,55" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="65" y1="55" x2="65" y2="135" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="110" y="155" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">밑변 9 cm</text>
+            <text x="45" y="95" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">4 cm</text>
+          </svg>
+        `,
+        options: ["32 cm²", "36 cm²", "40 cm²", "28 cm²"],
+        ans: 1,
+        explain: "9 × 4 = 36 cm²다냥!"
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "5단계. 삼각형의 넓이",
+    formula: "삼각형의 넓이 = (밑변) × (높이) ÷ 2",
+    catHint: "삼각형은 평행사변형의 딱 절반이야! 마지막에 꼭 2로 나누어줘야 해냥!",
+    questions: [
+      {
+        stem: "밑변이 6cm, 높이가 4cm인 삼각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="40,140 190,140 110,40" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="110" y1="40" x2="110" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <rect x="110" y="130" width="10" height="10" fill="none" stroke="#E11D48" stroke-width="1.5"/>
+            <text x="115" y="160" font-size="15" font-weight="bold" fill="#0369A1" text-anchor="middle">밑변 6 cm</text>
+            <text x="135" y="90" font-size="14" font-weight="bold" fill="#E11D48">높이 4cm</text>
+          </svg>
+        `,
+        options: ["12 cm²", "24 cm²", "10 cm²", "16 cm²"],
+        ans: 0,
+        explain: "(6 × 4) ÷ 2 = 24 ÷ 2 = 12 cm²다냥! 2로 나누는 것 잊지 마!"
+      },
+      {
+        stem: "밑변이 8cm, 높이가 5cm인 삼각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="40,140 200,140 120,40" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="120" y1="40" x2="120" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="160" font-size="15" font-weight="bold" fill="#B45309" text-anchor="middle">밑변 8 cm</text>
+            <text x="145" y="90" font-size="14" font-weight="bold" fill="#E11D48">5 cm</text>
+          </svg>
+        `,
+        options: ["40 cm²", "20 cm²", "25 cm²", "15 cm²"],
+        ans: 1,
+        explain: "(8 × 5) ÷ 2 = 40 ÷ 2 = 20 cm²다냥!"
+      },
+      {
+        stem: "밑변이 7cm, 높이가 4cm인 직각삼각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="60,140 190,140 60,50" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <rect x="60" y="128" width="12" height="12" fill="none" stroke="#16A34A" stroke-width="2"/>
+            <text x="125" y="160" font-size="15" font-weight="bold" fill="#15803D" text-anchor="middle">밑변 7 cm</text>
+            <text x="40" y="95" font-size="14" font-weight="bold" fill="#15803D" text-anchor="middle">4 cm</text>
+          </svg>
+        `,
+        options: ["14 cm²", "28 cm²", "21 cm²", "11 cm²"],
+        ans: 0,
+        explain: "(7 × 4) ÷ 2 = 28 ÷ 2 = 14 cm²다냥!"
+      },
+      {
+        stem: "밑변이 10cm, 높이가 6cm인 삼각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="35,140 205,140 130,35" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="130" y1="35" x2="130" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="160" font-size="15" font-weight="bold" fill="#7E22CE" text-anchor="middle">밑변 10 cm</text>
+            <text x="155" y="90" font-size="14" font-weight="bold" fill="#E11D48">6 cm</text>
+          </svg>
+        `,
+        options: ["60 cm²", "30 cm²", "35 cm²", "25 cm²"],
+        ans: 1,
+        explain: "(10 × 6) ÷ 2 = 60 ÷ 2 = 30 cm²다냥!"
+      },
+      {
+        stem: "밑변이 6cm, 높이가 7cm인 삼각형의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="50,145 190,145 120,35" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="120" y1="35" x2="120" y2="145" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="165" font-size="15" font-weight="bold" fill="#BE123C" text-anchor="middle">밑변 6 cm</text>
+            <text x="145" y="90" font-size="14" font-weight="bold" fill="#E11D48">7 cm</text>
+          </svg>
+        `,
+        options: ["21 cm²", "42 cm²", "24 cm²", "18 cm²"],
+        ans: 0,
+        explain: "(6 × 7) ÷ 2 = 42 ÷ 2 = 21 cm²다냥!"
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "6단계. 마름모의 넓이",
+    formula: "마름모 넓이 = (한 대각선) × (다른 대각선) ÷ 2",
+    catHint: "두 대각선을 곱한 다음, 삼각형처럼 꼭 2로 나누어줘요!",
+    questions: [
+      {
+        stem: "한 대각선 6cm, 다른 대각선 4cm인 마름모의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,25 200,90 120,155 40,90" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="40" y1="90" x2="200" y2="90" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <line x1="120" y1="25" x2="120" y2="155" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="80" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">가로대각선 6cm</text>
+            <text x="145" y="140" font-size="14" font-weight="bold" fill="#E11D48">세로 4cm</text>
+          </svg>
+        `,
+        options: ["12 cm²", "24 cm²", "10 cm²", "16 cm²"],
+        ans: 0,
+        explain: "(6 × 4) ÷ 2 = 24 ÷ 2 = 12 cm²다냥!"
+      },
+      {
+        stem: "한 대각선 8cm, 다른 대각선 6cm인 마름모의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,20 205,90 120,160 35,90" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="35" y1="90" x2="205" y2="90" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <line x1="120" y1="20" x2="120" y2="160" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="80" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">8 cm</text>
+            <text x="145" y="140" font-size="14" font-weight="bold" fill="#E11D48">6 cm</text>
+          </svg>
+        `,
+        options: ["48 cm²", "24 cm²", "28 cm²", "20 cm²"],
+        ans: 1,
+        explain: "(8 × 6) ÷ 2 = 48 ÷ 2 = 24 cm²다냥!"
+      },
+      {
+        stem: "한 대각선 10cm, 다른 대각선 4cm인 마름모의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,35 210,90 120,145 30,90" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="30" y1="90" x2="210" y2="90" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <line x1="120" y1="35" x2="120" y2="145" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="80" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">10 cm</text>
+            <text x="145" y="135" font-size="14" font-weight="bold" fill="#E11D48">4 cm</text>
+          </svg>
+        `,
+        options: ["20 cm²", "40 cm²", "25 cm²", "15 cm²"],
+        ans: 0,
+        explain: "(10 × 4) ÷ 2 = 40 ÷ 2 = 20 cm²다냥!"
+      },
+      {
+        stem: "한 대각선 7cm, 다른 대각선 6cm인 마름모의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,25 200,90 120,155 40,90" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="40" y1="90" x2="200" y2="90" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <line x1="120" y1="25" x2="120" y2="155" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="80" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">7 cm</text>
+            <text x="145" y="140" font-size="14" font-weight="bold" fill="#E11D48">6 cm</text>
+          </svg>
+        `,
+        options: ["42 cm²", "21 cm²", "24 cm²", "18 cm²"],
+        ans: 1,
+        explain: "(7 × 6) ÷ 2 = 42 ÷ 2 = 21 cm²다냥!"
+      },
+      {
+        stem: "한 대각선 8cm, 다른 대각선 8cm인 마름모의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="120,20 190,90 120,160 50,90" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="50" y1="90" x2="190" y2="90" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <line x1="120" y1="20" x2="120" y2="160" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="80" font-size="14" font-weight="bold" fill="#E11D48" text-anchor="middle">8 cm</text>
+            <text x="145" y="140" font-size="14" font-weight="bold" fill="#E11D48">8 cm</text>
+          </svg>
+        `,
+        options: ["32 cm²", "64 cm²", "28 cm²", "36 cm²"],
+        ans: 0,
+        explain: "(8 × 8) ÷ 2 = 64 ÷ 2 = 32 cm²다냥!"
+      }
+    ]
+  },
+  {
+    id: 7,
+    title: "7단계. 사다리꼴의 넓이",
+    formula: "사다리꼴 넓이 = (윗변 + 아랫변) × (높이) ÷ 2",
+    catHint: "먼저 윗변과 아랫변을 더해줘! 거기에 높이를 곱하고 2로 나누면 완성!",
+    questions: [
+      {
+        stem: "윗변 3cm, 아랫변 5cm, 높이 4cm인 사다리꼴의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="80,50 160,50 195,140 45,140" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="80" y1="50" x2="80" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <rect x="80" y="130" width="10" height="10" fill="none" stroke="#E11D48" stroke-width="1.5"/>
+            <text x="120" y="40" font-size="14" font-weight="bold" fill="#0369A1" text-anchor="middle">윗변 3 cm</text>
+            <text x="120" y="160" font-size="14" font-weight="bold" fill="#0369A1" text-anchor="middle">아랫변 5 cm</text>
+            <text x="60" y="95" font-size="13" font-weight="bold" fill="#E11D48">높이 4cm</text>
+          </svg>
+        `,
+        options: ["16 cm²", "32 cm²", "14 cm²", "20 cm²"],
+        ans: 0,
+        explain: "(3 + 5) × 4 ÷ 2 = 8 × 4 ÷ 2 = 16 cm²다냥!"
+      },
+      {
+        stem: "윗변 4cm, 아랫변 6cm, 높이 5cm인 사다리꼴의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="75,50 165,50 205,140 35,140" fill="#FEF3C7" stroke="#D97706" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="75" y1="50" x2="75" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="40" font-size="14" font-weight="bold" fill="#B45309" text-anchor="middle">윗변 4 cm</text>
+            <text x="120" y="160" font-size="14" font-weight="bold" fill="#B45309" text-anchor="middle">아랫변 6 cm</text>
+            <text x="55" y="95" font-size="13" font-weight="bold" fill="#E11D48">5 cm</text>
+          </svg>
+        `,
+        options: ["25 cm²", "50 cm²", "20 cm²", "30 cm²"],
+        ans: 0,
+        explain: "(4 + 6) × 5 ÷ 2 = 10 × 5 ÷ 2 = 25 cm²다냥!"
+      },
+      {
+        stem: "윗변 2cm, 아랫변 6cm, 높이 4cm인 사다리꼴의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="90,50 150,50 200,140 40,140" fill="#DCFCE7" stroke="#16A34A" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="90" y1="50" x2="90" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="40" font-size="14" font-weight="bold" fill="#15803D" text-anchor="middle">윗변 2 cm</text>
+            <text x="120" y="160" font-size="14" font-weight="bold" fill="#15803D" text-anchor="middle">아랫변 6 cm</text>
+            <text x="70" y="95" font-size="13" font-weight="bold" fill="#E11D48">4 cm</text>
+          </svg>
+        `,
+        options: ["16 cm²", "32 cm²", "18 cm²", "12 cm²"],
+        ans: 0,
+        explain: "(2 + 6) × 4 ÷ 2 = 8 × 4 ÷ 2 = 16 cm²다냥!"
+      },
+      {
+        stem: "윗변 5cm, 아랫변 7cm, 높이 6cm인 사다리꼴의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="70,50 170,50 210,140 30,140" fill="#F3E8FF" stroke="#9333EA" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="70" y1="50" x2="70" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="40" font-size="14" font-weight="bold" fill="#7E22CE" text-anchor="middle">윗변 5 cm</text>
+            <text x="120" y="160" font-size="14" font-weight="bold" fill="#7E22CE" text-anchor="middle">아랫변 7 cm</text>
+            <text x="50" y="95" font-size="13" font-weight="bold" fill="#E11D48">6 cm</text>
+          </svg>
+        `,
+        options: ["36 cm²", "72 cm²", "42 cm²", "30 cm²"],
+        ans: 0,
+        explain: "(5 + 7) × 6 ÷ 2 = 12 × 6 ÷ 2 = 36 cm²다냥!"
+      },
+      {
+        stem: "윗변 6cm, 아랫변 8cm, 높이 3cm인 사다리꼴의 넓이는?",
+        svg: () => `
+          <svg width="240" height="180" viewBox="0 0 240 180">
+            <polygon points="65,55 175,55 210,140 30,140" fill="#FFE4E6" stroke="#E11D48" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="65" y1="55" x2="65" y2="140" stroke="#E11D48" stroke-width="2.5" stroke-dasharray="5,5"/>
+            <text x="120" y="45" font-size="14" font-weight="bold" fill="#BE123C" text-anchor="middle">윗변 6 cm</text>
+            <text x="120" y="160" font-size="14" font-weight="bold" fill="#BE123C" text-anchor="middle">아랫변 8 cm</text>
+            <text x="45" y="100" font-size="13" font-weight="bold" fill="#E11D48">3 cm</text>
+          </svg>
+        `,
+        options: ["21 cm²", "42 cm²", "24 cm²", "18 cm²"],
+        ans: 0,
+        explain: "(6 + 8) × 3 ÷ 2 = 14 × 3 ÷ 2 = 21 cm²다냥!"
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = 'polygon_game_students_v3';
+let students = [];
+let currentStudentId = null;
+
+let currentSessionIdx = 0;
+let currentQuestionIdx = 0;
+let conceptQuizState = { q1: false, q2: false };
+
+function loadStudents() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      students = JSON.parse(data);
+    }
+  } catch (e) {
+    students = [];
+  }
+  if (!students || students.length === 0) {
+    students = [
+      { id: 'std_1', name: '냥냥이', sessionIdx: 0, questionIdx: 0, conceptPassed: false, stars: 0 }
+    ];
+    saveStudents();
+  }
+}
+
+function saveStudents() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+  } catch(e) {}
+}
+
+function getCurrentStudent() {
+  return students.find(s => s.id === currentStudentId);
+}
+
+function updateStudentProgress() {
+  const std = getCurrentStudent();
+  if (std) {
+    std.sessionIdx = currentSessionIdx;
+    std.questionIdx = currentQuestionIdx;
+    saveStudents();
+  }
+}
+
+function showProfileScreen() {
+  currentStudentId = null;
+  document.getElementById('view-profile').style.display = 'flex';
+  document.getElementById('view-game').style.display = 'none';
+  document.getElementById('view-concept').style.display = 'none';
+  document.getElementById('header-student-tag').style.display = 'none';
+  document.getElementById('btn-change-student').style.display = 'none';
+  renderStudentList();
+}
+
+function renderStudentList() {
+  const container = document.getElementById('student-list-container');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  students.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'student-card';
+    
+    let progressTxt = '0단계 개념 탐구 중';
+    if (s.conceptPassed) {
+      const sName = SESSIONS[s.sessionIdx] ? SESSIONS[s.sessionIdx].title : '완료!';
+      progressTxt = `${sName} (${s.questionIdx + 1}/5문제)`;
+    }
+
+    card.innerHTML = `
+      <div class="student-info">
+        <div class="avatar-circle">🐾</div>
+        <div>
+          <div class="student-name">${escapeHtml(s.name)}</div>
+          <div class="student-progress-text">${progressTxt}</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="student-badge">⭐ ${s.stars || 0}</span>
+        <button type="button" class="btn-reset-single" title="진도 처음부터 다시하기" style="background:none; border:none; cursor:pointer; color:#94A3B8; font-size:18px; padding:4px 8px;">↺</button>
+      </div>
+    `;
+
+    card.onclick = (e) => {
+      if (e.target.classList.contains('btn-reset-single')) {
+        e.stopPropagation();
+        resetSingleStudent(s.id);
+        return;
+      }
+      selectStudent(s.id);
+    };
+
+    container.appendChild(card);
+  });
+}
+
+function addNewStudent() {
+  const input = document.getElementById('new-student-name');
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) {
+    alert('학생 이름을 적어주세요냥!');
+    input.focus();
+    return;
+  }
+  const newStd = {
+    id: 'std_' + Date.now(),
+    name: name,
+    sessionIdx: 0,
+    questionIdx: 0,
+    conceptPassed: false,
+    stars: 0
+  };
+  students.push(newStd);
+  saveStudents();
+  input.value = '';
+  sounds.playPop();
+  renderStudentList();
+}
+
+function resetSingleStudent(id) {
+  if (confirm('이 학생의 진도를 처음부터 다시 시작할까요?')) {
+    const std = students.find(s => s.id === id);
+    if (std) {
+      std.sessionIdx = 0;
+      std.questionIdx = 0;
+      std.conceptPassed = false;
+      std.stars = 0;
+      saveStudents();
+      renderStudentList();
+    }
+  }
+}
+
+function selectStudent(id) {
+  currentStudentId = id;
+  const std = getCurrentStudent();
+  if (!std) return;
+
+  sounds.playPop();
+
+  document.getElementById('current-student-name').innerText = std.name;
+  document.getElementById('header-student-tag').style.display = 'flex';
+  document.getElementById('btn-change-student').style.display = 'flex';
+  document.getElementById('view-profile').style.display = 'none';
+
+  if (!std.conceptPassed) {
+    openConceptScreen();
+  } else {
+    currentSessionIdx = std.sessionIdx || 0;
+    currentQuestionIdx = std.questionIdx || 0;
+    openGameScreen();
+  }
+}
+
+function openConceptScreen() {
+  document.getElementById('view-profile').style.display = 'none';
+  document.getElementById('view-game').style.display = 'none';
+  document.getElementById('view-concept').style.display = 'flex';
+  document.getElementById('cat-concept-avatar').innerHTML = getCatSvg('normal');
+  
+  initTileGrid();
+  document.getElementById('walk-path-trace').setAttribute('d', '');
+  document.getElementById('walking-cat').setAttribute('transform', 'translate(30, 30)');
+
+  conceptQuizState = { q1: false, q2: false };
+  resetConceptQuizUI();
+}
+
+let isWalking = false;
+function startCatWalking() {
+  if (isWalking) return;
+  sounds.playPop();
+  isWalking = true;
+
+  const cat = document.getElementById('walking-cat');
+  const trace = document.getElementById('walk-path-trace');
+  const speech = document.getElementById('concept-cat-speech');
+  speech.innerHTML = "냥이가 <b>바깥 테두리 4cm + 2cm + 4cm + 2cm</b>를 밟고 걷고 있다냥!";
+
+  const waypoints = [
+    { x: 30, y: 30 },
+    { x: 210, y: 30 },
+    { x: 210, y: 120 },
+    { x: 30, y: 120 },
+    { x: 30, y: 30 }
+  ];
+
+  let segment = 0;
+  let progress = 0;
+  const speed = 0.035;
+
+  let currentPathD = "M 30 30";
+  trace.setAttribute('d', currentPathD);
+
+  function animate() {
+    progress += speed;
+    if (progress > 1) {
+      progress = 0;
+      segment++;
+    }
+
+    if (segment < 4) {
+      const p1 = waypoints[segment];
+      const p2 = waypoints[segment + 1];
+      const curX = p1.x + (p2.x - p1.x) * progress;
+      const curY = p1.y + (p2.y - p1.y) * progress;
+
+      cat.setAttribute('transform', `translate(${curX}, ${curY})`);
+      
+      let tempD = `M ${waypoints[0].x} ${waypoints[0].y}`;
+      for (let i = 0; i < segment; i++) {
+        tempD += ` L ${waypoints[i+1].x} ${waypoints[i+1].y}`;
+      }
+      tempD += ` L ${curX} ${curY}`;
+      trace.setAttribute('d', tempD);
+
+      requestAnimationFrame(animate);
+    } else {
+      cat.setAttribute('transform', `translate(30, 30)`);
+      trace.setAttribute('d', "M 30 30 L 210 30 L 210 120 L 30 120 Z");
+      isWalking = false;
+      sounds.playCorrect();
+      speech.innerHTML = "한 바퀴 완료! <b>둘레 = 4 + 2 + 4 + 2 = 12cm</b>가 바로 둘레다냥! 🎀";
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+let isFilling = false;
+function initTileGrid() {
+  const group = document.getElementById('tile-grid-group');
+  group.innerHTML = '';
+  document.getElementById('tile-count-label').style.display = 'none';
+
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 4; c++) {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', 30 + c * 45);
+      rect.setAttribute('y', 30 + r * 45);
+      rect.setAttribute('width', 45);
+      rect.setAttribute('height', 45);
+      rect.setAttribute('fill', '#FFFFFF');
+      rect.setAttribute('stroke', '#CBD5E1');
+      rect.setAttribute('stroke-width', '1.5');
+      rect.setAttribute('id', `tile-${r}-${c}`);
+      group.appendChild(rect);
+    }
+  }
+}
+
+function startTileFilling() {
+  if (isFilling) return;
+  sounds.playPop();
+  isFilling = true;
+  initTileGrid();
+
+  const speech = document.getElementById('concept-cat-speech');
+  speech.innerHTML = "1cm² 정사각형 타일로 <b>바닥을 빈틈없이 퐁퐁</b> 채워볼까냥?";
+
+  let count = 0;
+  const total = 8;
+  const tiles = [];
+  for (let r = 0; r < 2; r++) {
+    for (let c = 0; c < 4; c++) {
+      tiles.push(document.getElementById(`tile-${r}-${c}`));
+    }
+  }
+
+  const timer = setInterval(() => {
+    if (count < total) {
+      tiles[count].setAttribute('fill', '#34D399');
+      tiles[count].setAttribute('stroke', '#059669');
+      sounds.playPop();
+      count++;
+    } else {
+      clearInterval(timer);
+      isFilling = false;
+      sounds.playCorrect();
+      document.getElementById('tile-count-label').style.display = 'block';
+      speech.innerHTML = "타일 8개로 바닥을 꽉 채웠어! <b>넓이 = 4 × 2 = 8 cm²</b>다냥! 🟩";
+    }
+  }, 220);
+}
+
+function resetConceptQuizUI() {
+  for (let q = 1; q <= 2; q++) {
+    const item = document.getElementById(`concept-quiz-${q}`);
+    item.classList.remove('passed');
+    const fb = document.getElementById(`quiz-feedback-${q}`);
+    fb.style.display = 'none';
+    const btns = item.querySelectorAll('.quiz-choice-btn');
+    btns.forEach(b => {
+      b.style.borderColor = '#E2E8F0';
+      b.style.background = 'white';
+      b.style.color = '#2D3748';
+    });
+  }
+  document.getElementById('btn-enter-game').style.display = 'none';
+}
+
+function checkConceptQuiz(qNum, choice, btnElem) {
+  const isQ1Correct = (qNum === 1 && choice === 'perimeter');
+  const isQ2Correct = (qNum === 2 && choice === 'area');
+  const isCorrect = isQ1Correct || isQ2Correct;
+
+  const item = document.getElementById(`concept-quiz-${qNum}`);
+  const fb = document.getElementById(`quiz-feedback-${qNum}`);
+  const buttons = item.querySelectorAll('.quiz-choice-btn');
+
+  buttons.forEach(b => {
+    b.style.background = 'white';
+    b.style.borderColor = '#E2E8F0';
+  });
+
+  fb.style.display = 'block';
+
+  if (isCorrect) {
+    sounds.playCorrect();
+    btnElem.style.background = '#ECFDF5';
+    btnElem.style.borderColor = '#10B981';
+    btnElem.style.color = '#047857';
+    item.classList.add('passed');
+    conceptQuizState[`q${qNum}`] = true;
+
+    if (qNum === 1) {
+      fb.innerHTML = "정답! 상자 테두리를 한 바퀴 빙 둘러 묶는 길이니까 <b>둘레</b>가 맞아요! 🎀";
+      fb.style.color = "#047857";
+    } else {
+      fb.innerHTML = "정답! 잔디밭 바닥을 빈틈없이 덮는 크기니까 <b>넓이</b>가 맞아요! 🟩";
+      fb.style.color = "#047857";
+    }
+
+    if (conceptQuizState.q1 && conceptQuizState.q2) {
+      sounds.playFanfare();
+      document.getElementById('btn-enter-game').style.display = 'block';
+      document.getElementById('concept-cat-speech').innerHTML = "와아! 둘레와 넓이의 차이를 완벽히 이해했구나냥! 이제 본 게임으로 가자냥! 👑";
+      document.getElementById('cat-concept-avatar').innerHTML = getCatSvg('celebrate');
+    }
+  } else {
+    sounds.playEncourage();
+    btnElem.style.background = '#FEF2F2';
+    btnElem.style.borderColor = '#EF4444';
+    btnElem.style.color = '#B91C1C';
+    conceptQuizState[`q${qNum}`] = false;
+
+    if (qNum === 1) {
+      fb.innerHTML = "다시 생각해볼까냥? 바깥쪽 테두리를 한 바퀴 삥 둘러 감는 길이는 <b>둘레</b>예요!";
+      fb.style.color = "#DC2626";
+    } else {
+      fb.innerHTML = "다시 생각해볼까냥? 바닥을 활짝 덮는 크기는 <b>넓이</b>예요!";
+      fb.style.color = "#DC2626";
+    }
+  }
+}
+
+function finishConceptAndGoToGame() {
+  const std = getCurrentStudent();
+  if (std) {
+    std.conceptPassed = true;
+    std.sessionIdx = 0;
+    std.questionIdx = 0;
+    saveStudents();
+  }
+  openGameScreen();
+}
+
+function openGameScreen() {
+  document.getElementById('view-profile').style.display = 'none';
+  document.getElementById('view-concept').style.display = 'none';
+  document.getElementById('view-game').style.display = 'flex';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const session = SESSIONS[currentSessionIdx];
+  const qData = session.questions[currentQuestionIdx];
+
+  document.getElementById('session-name-text').innerText = session.title;
+  document.getElementById('question-progress-badge').innerText = `${currentQuestionIdx + 1} / 5 문제`;
+
+  const hintBox = document.getElementById('formula-hint-box');
+  hintBox.style.display = 'none';
+  hintBox.innerText = session.formula;
+
+  document.getElementById('cat-avatar-box').innerHTML = getCatSvg('normal');
+  document.getElementById('cat-speech-text').innerText = session.catHint;
+
+  document.getElementById('diagram-container').innerHTML = qData.svg();
+  document.getElementById('question-stem').innerText = qData.stem;
+
+  const optContainer = document.getElementById('options-container');
+  optContainer.innerHTML = '';
+
+  qData.options.forEach((optText, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerText = optText;
+    btn.onclick = () => handleAnswer(idx, btn);
+    optContainer.appendChild(btn);
+  });
+}
+
+function toggleFormulaHint() {
+  sounds.playPop();
+  const box = document.getElementById('formula-hint-box');
+  box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+}
+
+function handleAnswer(selectedIdx, btnElem) {
+  const session = SESSIONS[currentSessionIdx];
+  const qData = session.questions[currentQuestionIdx];
+  const buttons = document.querySelectorAll('.opt-btn');
+
+  if (selectedIdx === qData.ans) {
+    sounds.playCorrect();
+    btnElem.classList.add('correct');
+    buttons.forEach(b => b.disabled = true);
+
+    document.getElementById('cat-avatar-box').innerHTML = getCatSvg('happy');
+    document.getElementById('cat-speech-text').innerHTML = `<b>딩동댕 정답!</b> ${qData.explain}`;
+
+    const std = getCurrentStudent();
+    if (std) {
+      std.stars = (std.stars || 0) + 1;
+      saveStudents();
+    }
+
+    setTimeout(() => {
+      proceedNext();
+    }, 1500);
+
+  } else {
+    sounds.playEncourage();
+    btnElem.classList.add('wrong');
+    document.getElementById('cat-avatar-box').innerHTML = getCatSvg('cheer');
+    document.getElementById('cat-speech-text').innerText = "아쉬워라! 공식 힌트를 한번 더 보고 다시 골라보자냥!";
+    setTimeout(() => {
+      btnElem.classList.remove('wrong');
+    }, 1200);
+  }
+}
+
+function proceedNext() {
+  currentQuestionIdx++;
+  if (currentQuestionIdx >= 5) {
+    currentQuestionIdx = 0;
+    sounds.playFanfare();
+
+    const clearedSessionName = SESSIONS[currentSessionIdx].title;
+    currentSessionIdx++;
+
+    if (currentSessionIdx >= SESSIONS.length) {
+      currentSessionIdx = 0;
+      updateStudentProgress();
+      showModal("🎉 대탐험 대성공!", "와! 둘레와 넓이의 모든 7단계를 다 맞췄어! 정말 최고의 수학 박사냥이다냥! 👑");
+    } else {
+      updateStudentProgress();
+      showModal("🌟 세션 클리어!", `멋져요! <b>${clearedSessionName}</b>을 모두 끝냈어요!<br>다음 단계로 넘어가볼까요?`);
+    }
+  } else {
+    updateStudentProgress();
+    loadQuestion();
+  }
+}
+
+function showModal(title, desc) {
+  document.getElementById('modal-title').innerHTML = title;
+  document.getElementById('modal-desc').innerHTML = desc;
+  document.getElementById('modal-cat-svg').innerHTML = getCatSvg('celebrate');
+  document.getElementById('modal-container').style.display = 'flex';
+}
+
+function closeModal() {
+  sounds.playPop();
+  document.getElementById('modal-container').style.display = 'none';
+  loadQuestion();
+}
+
+function toggleSound() {
+  sounds.muted = !sounds.muted;
+  const btn = document.getElementById('btn-sound-toggle');
+  btn.innerText = sounds.muted ? '🔇 음소거' : '🔊 소리';
+}
+
+function downloadCurrentHTML() {
+  sounds.playPop();
+  const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'polygon_math_game.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, function(m) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[m];
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('profile-hero-cat').innerHTML = getCatSvg('happy');
+  loadStudents();
+  showProfileScreen();
+
+  const addBtn = document.getElementById('btn-add-student');
+  if (addBtn) {
+    addBtn.addEventListener('click', addNewStudent);
+    addBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      addNewStudent();
+    });
+  }
+});
+</script>
+</body>
+</html>
